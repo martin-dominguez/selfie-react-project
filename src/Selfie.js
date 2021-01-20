@@ -1,33 +1,38 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import ClayIcon from '@clayui/icon';
 import ClayButton from "@clayui/button";
 import ClayLayout from "@clayui/layout";
 
-class Selfie extends React.Component {
-    state = {
-        imageURL: '',
-    }
+import { getIconsPath } from "./utils"; 
 
-    videoEle = React.createRef();
-    canvasEle = React.createRef();
-    imageEle = React.createRef();
+function Selfie() {
+    const [imageURL, setImageURL] = useState('');
 
-    startCamera = async () => {
+    const videoEle = useRef();
+    const canvasEle = useRef();
+    const imageEle = useRef();
+
+    const spritemap = getIconsPath();
+
+    const startCamera = async () => {
         try {
-            const stream =  await navigator.mediaDevices.getUserMedia({
-                video: true
-            });
+            const constraints = {
+                video: { width: { min: 620 }, height: { min: 360 } },
+              };
 
-            this.videoEle.current.srcObject = stream;
+            navigator.mediaDevices.getUserMedia(constraints)
+              .then((stream) => {
+                videoEle.current.srcObject = stream
+              })
             
         } catch(err) {
             console.log(err);
         }
     }
 
-    stopCam = () => {
-        const stream = this.videoEle.current.srcObject;
+    const stopCam = () => {
+        const stream = videoEle.current.srcObject;
         const tracks = stream.getTracks();
         
         tracks.forEach(track => {
@@ -35,78 +40,70 @@ class Selfie extends React.Component {
         });
     }
 
-    backToCam = () => {
-        this.setState({
-            imageURL: ''
-        }, () => {
-            this.startCamera();
-        })
+    const backToCam = () => {
+        setImageURL('')
+        startCamera();
     }
 
-    takeSelfie = async () => {
+    const takeSelfie = async () => {
         // Get the exact size of the video element.
-        const width = this.videoEle.current.videoWidth;
-        const height = this.videoEle.current.videoHeight;
+        const width = videoEle.current.videoWidth;
+        const height = videoEle.current.videoHeight;
 
         // get the context object of hidden canvas
-        const ctx = this.canvasEle.current.getContext('2d');
+        const ctx = canvasEle.current.getContext('2d');
 
         // Set the canvas to the same dimensions as the video.
-        this.canvasEle.current.width = width;
-        this.canvasEle.current.height = height;
+        canvasEle.current.width = width;
+        canvasEle.current.height = height;
 
         // Draw the current frame from the video on the canvas.
-        ctx.drawImage(this.videoEle.current, 0, 0, width, height);
+        ctx.drawImage(videoEle.current, 0, 0, width, height);
 
         // Get an image dataURL from the canvas.
-        const imageDataURL = this.canvasEle.current.toDataURL('image/png');
+        const imageDataURL = canvasEle.current.toDataURL('image/png');
 
         // Set the dataURL as source of an image element, showing the captured photo.
-        this.stopCam();
-        this.setState({
-            imageURL: imageDataURL
-        })
+        stopCam();
+        setImageURL(imageDataURL);
     }
 
-    componentDidMount = async () => {
-        this.startCamera();
-    }
+    useEffect(() => {
+        startCamera();
+    });
 
-    render() {
-        const spritemap = Liferay.ThemeDisplay.getPathThemeImages().concat("/clay/icons.svg");
-        return (
-            <ClayLayout.ContainerFluid view>
-                <ClayLayout.Row>
-                    <ClayLayout.Col size={12} className="selfie">
-                        {this.state.imageURL === '' && <div className="cam">
-                            <video width="100%" height="100%" className="video-player" autoPlay={true} ref={this.videoEle}></video>
-                            <ClayButton className="btn capture-btn" displayType="outline-primary" onClick={this.takeSelfie}>
-                                <ClayIcon spritemap={spritemap} symbol="camera" aria-hidden="true" />
+    return (
+        <ClayLayout.ContainerFluid view>
+            <ClayLayout.Row>
+                <ClayLayout.Col size={12} className="selfie">
+                    {imageURL === '' && <div className="cam">
+                        <video className="video-player" autoPlay={true} ref={videoEle}></video>
+                        <ClayButton className="capture-btn" displayType="outline-primary" onClick={takeSelfie}>
+                            <ClayIcon spritemap={spritemap} symbol="camera" aria-hidden="true" />
+                        </ClayButton>
+                    </div>
+                    }
+
+                    <canvas ref={canvasEle} style={{display: 'none'}}></canvas>
+                    {imageURL !== '' && <div className="preview">
+                        <img className="preview-img" src={imageURL} ref={imageEle} />
+
+                        <div className="btn-container">
+                            <ClayButton className="back-btn" displayType="outline-primary" onClick={backToCam}>
+                                <ClayIcon spritemap={spritemap} symbol="caret-left" aria-hidden="true" />
                             </ClayButton>
+                            <a href={imageURL} download="selfie.png"
+                            className="btn btn-outline-primary download-btn">
+                                <ClayIcon spritemap={spritemap} symbol="download" aria-hidden="true" />
+                            </a>
                         </div>
-                        }
 
-                        <canvas ref={this.canvasEle} style={{display: 'none'}}></canvas>
-                        {this.state.imageURL !== '' && <div className="preview">
-                            <img className="preview-img" src={this.state.imageURL} ref={this.imageEle} />
-
-                            <div className="btn-container">
-                                <ClayButton className="btn back-btn" onClick={this.backToCam}>
-                                    <ClayIcon spritemap={spritemap} symbol="caret-left" aria-hidden="true" />
-                                </ClayButton>
-                                <a href={this.state.imageURL} download="selfie.png"
-                                className="btn download-btn">
-                                    <ClayIcon spritemap={spritemap} symbol="download" aria-hidden="true" />
-                                </a>
-                            </div>
-
-                        </div>
-                        }
-                    </ClayLayout.Col>
-                </ClayLayout.Row>
-            </ClayLayout.ContainerFluid>
-        )
-     }
+                    </div>
+                    }
+                </ClayLayout.Col>
+            </ClayLayout.Row>
+        </ClayLayout.ContainerFluid>
+    )
 }
 
 export default Selfie;

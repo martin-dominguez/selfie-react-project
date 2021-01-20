@@ -3,31 +3,45 @@
     justify-content: center;
 }
 
-.cam, .preview {
+.selfie .btn {
+    cursor: pointer;
+    border: solid 1px white;
+    border-radius: 9999px;
+    padding: 1em;
+}
+
+.selfie .btn svg.lexicon-icon {
+    height: 36px;
+    width: 36px;
+    fill: white;
+}
+
+.selfie .btn:hover {
+    background-color: rgb(255,255,255,0.4);
+}
+
+.selfie .cam, .selfie .preview {
     position: relative;
 }
 
-.preview-img {
+.selfie .preview-img {
     display: block;
 }
 
-.capture-btn {
+.selfie .capture-btn {
     position: absolute;
     bottom: 9px;
     display: block;
     left: 50%;
     transform: translateX(-50%);
     background: none;
-    color: #fff;
-    border: none;
-    font-size: 40px;
 }
 
-.video-player {
+.selfie .video-player {
     display: block;
 }
 
-.btn-container {
+.selfie .btn-container {
     display: flex;
     justify-content: space-between;
     position: absolute;
@@ -35,13 +49,13 @@
     left: 0;
 }
 
-.back-btn, .download-btn {
-    background: none;
-    color: #fff;
-    border: none;
-    font-size: 40px;
+.selfie .back-btn, 
+.selfie .download-btn {
+    margin-left: 25px;
+    margin-bottom: 9px;
+    background-color: transparent;
 }
 
-.download-btn {
+.selfie .download-btn {
     margin-left: 25px;
 }
