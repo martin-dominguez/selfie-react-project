@@ -1,0 +1,47 @@
+.selfie {
+    display: flex;
+    justify-content: center;
+}
+
+.cam, .preview {
+    position: relative;
+}
+
+.preview-img {
+    display: block;
+}
+
+.capture-btn {
+    position: absolute;
+    bottom: 9px;
+    display: block;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    color: #fff;
+    border: none;
+    font-size: 40px;
+}
+
+.video-player {
+    display: block;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.back-btn, .download-btn {
+    background: none;
+    color: #fff;
+    border: none;
+    font-size: 40px;
+}
+
+.download-btn {
+    margin-left: 25px;
+}
