@@ -146,7 +146,7 @@ function Selfie() {
                                 <ClayIcon spritemap={spritemap} symbol="caret-left" aria-hidden="true" />
                             </ClayButton>
                             <ClayButton className="back-btn" displayType="outline-primary" onClick={handleSave}>
-                                <ClayIcon spritemap={spritemap} symbol="download" aria-hidden="true" />
+                                <ClayIcon spritemap={spritemap} symbol="upload" aria-hidden="true" />
                             </ClayButton>
                         </div>
 
