@@ -23,13 +23,13 @@ function Selfie() {
 
             navigator.mediaDevices.getUserMedia(constraints)
               .then((stream) => {
-                videoEle.current.srcObject = stream
+                videoEle.current.srcObject = stream;
               })
             
         } catch(err) {
             console.log(err);
         }
-    }
+    };
 
     const stopCam = () => {
         const stream = videoEle.current.srcObject;
@@ -38,12 +38,12 @@ function Selfie() {
         tracks.forEach(track => {
           track.stop();
         });
-    }
+    };
 
     const backToCam = () => {
-        setImageURL('')
+        setImageURL('');
         startCamera();
-    }
+    };
 
     const takeSelfie = async () => {
         // Get the exact size of the video element.
@@ -66,7 +66,60 @@ function Selfie() {
         // Set the dataURL as source of an image element, showing the captured photo.
         stopCam();
         setImageURL(imageDataURL);
-    }
+    };
+
+    const handleSave = () => {
+        const siteGroupId = Liferay.ThemeDisplay.getSiteGroupId();
+        canvasEle.current.toBlob((blob) => {
+            // Create a file with the blob
+            const timestamp = Date.now();
+            const file  = new File(
+				[blob],
+				`selfie-${timestamp}.png`,
+				{
+					type: 'image/png'
+				}
+            );
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            Liferay.Util.fetch(
+				`/o/headless-delivery/v1.0/sites/${siteGroupId}/documents`, {
+					headers: {
+						'Accept': 'application/json'
+					},
+					method: 'POST',
+					body: formData,
+				}
+            )
+            .then((response) => response.json())
+			.then((data) => {
+				if (data.status === 'CONFLICT') {
+					Liferay.Util.openToast({
+						message: data.title,
+						type: 'danger',
+					});
+				} else {
+					Liferay.Util.openToast({
+						message: 'Hurrah! Your image was uploaded',
+						type: 'success',
+                    });
+                    backToCam();
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				Liferay.Util.openToast({
+					message: 'An error occured uploading your document',
+					type: 'danger',
+				});
+			});
+            
+            ;
+        });
+
+    };
 
     useEffect(() => {
         startCamera();
@@ -92,10 +145,9 @@ function Selfie() {
                             <ClayButton className="back-btn" displayType="outline-primary" onClick={backToCam}>
                                 <ClayIcon spritemap={spritemap} symbol="caret-left" aria-hidden="true" />
                             </ClayButton>
-                            <a href={imageURL} download="selfie.png"
-                            className="btn btn-outline-primary download-btn">
+                            <ClayButton className="back-btn" displayType="outline-primary" onClick={handleSave}>
                                 <ClayIcon spritemap={spritemap} symbol="download" aria-hidden="true" />
-                            </a>
+                            </ClayButton>
                         </div>
 
                     </div>
