@@ -70,7 +70,7 @@ function Selfie({configuration}) {
 
     const handleSave = () => {
         const siteGroupId = Liferay.ThemeDisplay.getSiteGroupId();
-        const folderId = configuration.system.folderId;
+        const folderId = configuration.portletInstance.folderId;
         canvasEle.current.toBlob((blob) => {
             // Create a file with the blob
             const timestamp = Date.now();
