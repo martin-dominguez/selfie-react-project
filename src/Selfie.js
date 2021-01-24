@@ -93,7 +93,7 @@ function Selfie() {
 					body: formData,
 				}
             )
-            .then((response) => response.json())
+            .then((response) => response.json()) 
 			.then((data) => {
 				if (data.status === 'CONFLICT') {
 					Liferay.Util.openToast({
@@ -123,7 +123,7 @@ function Selfie() {
 
     useEffect(() => {
         startCamera();
-    });
+    }, []);
 
     return (
         <ClayLayout.ContainerFluid view>
