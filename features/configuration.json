@@ -4,6 +4,11 @@
 		"category": "selfie-project", 
 		"name": "selfie-project",
 		"fields": { 
+			"folderId": {
+				"type": "number",
+				"name": "folderId",
+				"default": 0
+			}
 		} 
 	},
 	"portletInstance": {

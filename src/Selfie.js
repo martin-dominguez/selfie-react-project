@@ -6,7 +6,7 @@ import ClayLayout from "@clayui/layout";
 
 import { getIconsPath } from "./utils"; 
 
-function Selfie() {
+function Selfie({configuration}) {
     const [imageURL, setImageURL] = useState('');
 
     const videoEle = useRef();
@@ -70,6 +70,7 @@ function Selfie() {
 
     const handleSave = () => {
         const siteGroupId = Liferay.ThemeDisplay.getSiteGroupId();
+        const folderId = configuration.system.folderId;
         canvasEle.current.toBlob((blob) => {
             // Create a file with the blob
             const timestamp = Date.now();
@@ -84,37 +85,44 @@ function Selfie() {
             const formData = new FormData();
             formData.append('file', file);
             
-            Liferay.Util.fetch(
-				`/o/headless-delivery/v1.0/sites/${siteGroupId}/documents`, {
-					headers: {
-						'Accept': 'application/json'
-					},
-					method: 'POST',
-					body: formData,
-				}
-            )
-            .then((response) => response.json()) 
-			.then((data) => {
-				if (data.status === 'CONFLICT') {
-					Liferay.Util.openToast({
-						message: data.title,
-						type: 'danger',
-					});
-				} else {
-					Liferay.Util.openToast({
-						message: 'Hurrah! Your image was uploaded',
-						type: 'success',
+            if (folderId > 0) {
+                Liferay.Util.fetch(
+                    `/o/headless-delivery/v1.0/document-folders/${folderId}/documents`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        method: 'POST',
+                        body: formData,
+                    }
+                )
+                .then((response) => response.json()) 
+                .then((data) => {
+                    if (data.status === 'CONFLICT') {
+                        Liferay.Util.openToast({
+                            message: data.title,
+                            type: 'danger',
+                        });
+                    } else {
+                        Liferay.Util.openToast({
+                            message: 'Hurrah! Your image was uploaded',
+                            type: 'success',
+                        });
+                        backToCam();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    Liferay.Util.openToast({
+                        message: 'An error occured uploading your document',
+                        type: 'danger',
                     });
-                    backToCam();
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-				Liferay.Util.openToast({
-					message: 'An error occured uploading your document',
-					type: 'danger',
-				});
-			});
+                });
+            } else {
+                Liferay.Util.openToast({
+                    message: 'Folder Id not valid, please configure your widget',
+                    type: 'danger',
+                });
+            }
             
             ;
         });
