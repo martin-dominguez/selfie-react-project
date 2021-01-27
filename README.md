@@ -24,3 +24,25 @@ Esta aplicación realiza un selfie y tiene varias opciones seleccionables por ra
 * [Liferay JS Object](https://help.liferay.com/hc/es/articles/360029005792-Liferay-JavaScript-APIs)
 * [ReactJS en Español](https://es.reactjs.org/)
 * [Liferay NPM bundler](https://github.com/liferay/liferay-js-toolkit/wiki/How-to-use-liferay-npm-bundler)
+
+## Descarga 
+    git clone https://github.com/martin-dominguez/selfie-react-project.git
+
+## Compilación Despligue
+*Importante*: Previamente abre el fichero `.npmbuildrc` y cambia el atributo *"liferayDir"* con la ruta local de tu instalación
+
+Con Yarn:
+    $ cd selfie-react-project
+    $ yarn install
+    $ yarn deploy
+
+Con NPM:
+    $ cd selfie-react-project
+    $ npm install
+    $ npm run deploy
+
+Si no tienes instalación local en vez de `deploy` escribe `build`. Podrás obtener el fichero JAR de la carpeta `dist`. Por ejemplo:
+    $ cd selfie-react-project
+    $ yarn install
+    $ yarn build
+    $ cp dist/selfie-react-project-1.0.0.jar **dónde tu quieras**
